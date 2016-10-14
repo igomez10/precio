@@ -11,27 +11,53 @@
 <div ng-app="myApp" ng-controller="myCtrl">
 <div>
 <h1 align='center'>
-{{mensaje}}
+
+<label>Fecha:</label>{{ultimaFecha}} 
+<p><p>
+<label>Valor de Cierre</label>{{ultimoValor}}
+{{prueba}}
 </h1>
 </div>
 
 
+<div align=center>
+<label>Fecha a buscar</label>
+<input align="center" type="text" ng-model='fechaBuscada'>
+<button ng-click='buscar(fechaBuscada)'>Buscar</button>
 <div>
-
+<p>
+fecha Buscada: {{existe}}
+</p>
 </div>
+<p>
+	Valor encontrado: {{valorEncontrado}}
+</p>
+</div>
+
 </div>
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope,$http,$interval) {
-
 	$scope.mensaje='cargando....';
+	var registros="no hay";
 	$scope.agregar=$interval(function(){
 		$http.get('https://www.quandl.com/api/v3/datasets/COM/COFFEE_CLMB.json?api_key=KcCkwZ72yMwzQtCEqoTb').then(function(response){
-			var linea=response.data;
+			registros=response.data.dataset.data;
 			
-			$scope.mensaje = 'Fecha:'+linea.dataset.data[0][0] +'    Valor:'+linea.dataset.data[0][1];
+			$scope.ultimaFecha = registros[0][0];
+			$scope.ultimoValor = registros[0][1];
 			})
-		},1000);
+		},100);
+	$scope.valorEncontrado='no encontramos un valor';	
+	$scope.buscar=function(fechaBuscada){
+		$scope.existe=fechaBuscada;
+		for(var i=0; i<registros.length;i++){
+			$scope.fechaCiclo=registros[i][0];
+			if($scope.fechaCiclo===fechaBuscada){
+				$scope.valorEncontrado=registros[i][1];
+			}
+		}
+		};		
 });
 </script>
 </body>
